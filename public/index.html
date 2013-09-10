@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" href="yak.css" />
+</head>
+<body>
+    <div id="choose-nickname">
+        <h3>Choose Nickname</h3>
+        <input type="text" id="nickname" />
+        <a href="#" id="join">JOIN</a>
+    </div><!-- #choose-nickname -->
+
+    <div id="chat">
+        <div id="chat-box"></div><!-- #chat -->
+        <ul id="users"></ul><!-- #users -->
+        <input type="text" name="message" id="message">
+    </div><!-- #chat -->
+
+    <!-- TEMPLATES -->
+    <script type="text/html" id="message-tpl">
+        <div class="message">
+            <div class="nick"><%= nickname %></div><!-- .user -->
+            <div class="msg"><%= message %></div><!-- .msg -->
+            <div class="time"><%= datetime %></div><!-- .time -->
+        </div><!-- .message -->
+    </script>
+
+    <script type="text/html" id="users-tpl">
+        <% _.each(users, function( user ) { %>
+            <li data-id="<%= user.id %>"><%= user.name %></li>
+        <% }); %>
+    </script>
+    <!-- END TEMPLATES -->
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/lib/underscore.js"></script>
+    <script src="js/lib/jquery-1.10.2.min.js"></script>
+    <script src="js/yak.js"></script>
+</body>
+</html>

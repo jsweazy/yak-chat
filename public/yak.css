@@ -1,0 +1,30 @@
+body {
+    font-family: Arial;
+}
+
+#choose-nickname.off {
+    display: none;
+}
+
+#chat-box {
+    height: 200px;
+    overflow: hidden;
+    overflow-y: scroll;
+    width: 100%;
+    border: 1px solid #ccc;
+    word-wrap: break-word;
+}
+
+.message .time { display: none; }
+
+#chat {
+    display: none;
+}
+
+#chat.on {
+    display: block;
+}
+
+#message {
+    width: 100%;
+}
