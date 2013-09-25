@@ -1,6 +1,6 @@
 jQuery( function() {
     var socket = io.connect(),
-        nickname = '',
+        nick = '',
         $message_box = $('#message'),
         $rooms = $('#chat-rooms'),
         $rooms_list = $('#room-list').find('ul');
@@ -30,8 +30,9 @@ jQuery( function() {
         if ( e.keyCode != 13 || !$message_box.val().trim() ) return;
 
         socket.emit( 'send message', {
-            'room': $('#room-list').find('.current').data('room'),
-            'message': $message_box.val()
+            room: $('#room-list').find('.current').data('room'),
+            message: $message_box.val(),
+            datetime: new Date()
         });
 
         $message_box.val('');
@@ -49,19 +50,21 @@ jQuery( function() {
     //     $users.find('li[data-id="' + id + '"]').remove();
     // });
 
-    // socket.on('new message', function( data ) {
-    //     $chat_box.append( message_tpl( data ) );
-    //     $chat_box.scrollTop( $chat[0].scrollHeight );
-    // });
+    socket.on('new message', function( data ) {
+        console.log(data);
+        var $open_chat = $rooms.find('.room[data-room=' + data.room + ']').find('.chat');
+        $open_chat.append( message_tpl( data ) );
+        $open_chat.scrollTop( $open_chat[0].scrollHeight );
+    });
 
     socket.on( 'set nick', function( nick ) {
         var target = $('#room-list').find('.current').data('room');
-        nickname = nick;
+        nick = nick;
 
         var $open_room = $('.room[data-room=' + target +']').find('.chat');
 
         $open_room.append( message_tpl({
-            nickname: 'SERVER',
+            nick: 'SERVER',
             message: 'Your nick is now ' + nick,
             datetime: new Date()
         }))

@@ -47,7 +47,12 @@ io.sockets.on( 'connection', function( socket ) {
                 socket.emit( 'join room', room );
             }
         } else {
-            io.sockets.emit( 'new message', data );
+            if ( data.room == '#main' ) return;
+
+            socket.get('nick', function( err, nick ) {
+                data.nick = nick;
+                io.sockets.emit( 'new message', data );
+            });
         }
     });
 
