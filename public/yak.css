@@ -1,30 +1,142 @@
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+html, body, div, form, fieldset, legend, label, input {
+    margin: 0;
+    padding: 0;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+th, td {
+    text-align: left;
+    vertical-align: top;
+}
+
+h1, h2, h3, h4, h5, h6, th, td, caption { font-weight:normal; }
+
+img { border: 0; }
+
+
+*, *:before, *:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+html,
+body {
+    height: 100%;
+}
+
 body {
     font-family: Arial;
 }
 
+#choose-nickname {display: none;}
 #choose-nickname.off {
     display: none;
 }
 
-#chat-box {
-    height: 200px;
+/* ==========================================================================
+   Chat
+   ========================================================================== */
+
+#chat {
+    /*display: none;*/
+    height: 100%;
+    position: relative;
     overflow: hidden;
-    overflow-y: scroll;
+}
+
+#chats {
+    overflow: hidden;
     width: 100%;
-    border: 1px solid #ccc;
+    height: 100%;
+}
+
+#room-list {
+    position: absolute;
+}
+
+#room-list ul li {
+    display: inline;
+}
+
+#chat-rooms {
+    height: 100%;
+    width: 100%;
+}
+
+.room {
+    content: 'rooooooooom';
+    width: 80%;
+    border-right: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    height: 100%;
+    padding: 50px 0 40px;
+    display: none;
+}
+
+.room[data-room="#main"] {
+    border: none;
+    width: 100%;
+}
+
+.room.current {
+    display: block;
+}
+
+.chat {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
     word-wrap: break-word;
+    float: left;
+    padding: 0 20px;
+}
+
+#users {
+    width: 20%;
+    float: right;
 }
 
 .message .time { display: none; }
-
-#chat {
-    display: none;
-}
 
 #chat.on {
     display: block;
 }
 
 #message {
+    border: none;
+    border-top: 1px solid #ccc;
+    position: absolute;
+    bottom: 0;
+    left: 0;
     width: 100%;
+    height: 40px;
+    line-height: 40px;
+    padding: 10px;
+    outline: none;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+}
+
+/*
+    HTML Structure:
+
+    <div class="message">
+        <div class="nick"></div><!-- .user -->
+        <div class="msg"></div><!-- .msg -->
+        <div class="time"></div><!-- .time -->
+    </div>
+*/
+
+.message {
+    padding: 0.5em 0;
 }

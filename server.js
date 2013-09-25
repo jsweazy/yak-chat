@@ -25,7 +25,44 @@ io.sockets.on( 'connection', function( socket ) {
     io.sockets.emit( 'set users', users );
 
     socket.on( 'send message', function( data ) {
-        io.sockets.emit( 'new message', data );
+        var message = data.message;
+
+        if ( data.message.substring( 0, 1 ) == '/' ) {
+            if ( message.substring( 1, 5 ) == 'nick' ) {
+                var nick = message.substring(6);
+                socket.set('nick', nick, function() {
+                    socket.emit( 'set nick', nick );
+                });
+            }
+            else if ( message.substring( 1, 5 ) == 'join' ) {
+                var room = message.substring(6);
+
+                if ( room.substring( 0, 1 ) != '#' ) {
+                    room = '#' + room;
+                }
+
+                room = room.replace( / /g, '_' );
+
+                socket.join( room );
+                socket.emit( 'join room', room );
+            }
+        } else {
+            io.sockets.emit( 'new message', data );
+        }
+    });
+
+    // socket.on( 'set nick', function( nick ) {
+    //     console.log('setting nick');
+    //     socket.nick = nick;
+    //     io.sockets.emit( 'nick set', nick );
+    // });
+
+    socket.on( 'join room', function( data ) {
+        socket.join( data.room );
+    });
+
+    socket.on( 'leave room', function( data ) {
+        socket.leave( data.room );
     });
 
     socket.on( 'user connected', function( data ) {

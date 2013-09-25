@@ -1,55 +1,79 @@
 jQuery( function() {
     var socket = io.connect(),
         nickname = '',
-        $nickname_box = $('#nickname'),
-        $join_btn = $('#join'),
         $message_box = $('#message'),
-        $nickname = $('#choose-nickname'),
-        $chat = $('#chat'),
-        $chat_box = $('#chat-box'),
-        $users = $('#users');
+        $rooms = $('#chat-rooms'),
+        $rooms_list = $('#room-list').find('ul');
 
     // Templates
-    var message_tpl = _.template( $('#message-tpl').html() );
-    var users_tpl = _.template( $('#users-tpl').html() );
+    var message_tpl = _.template( $('#message-tpl').html() ),
+        users_tpl = _.template( $('#users-tpl').html() ),
+        room_tpl = _.template( $('#room-tpl').html() ),
+        room_tab_tpl = _.template( $('#room-tab-tpl').html() );
 
-    $join_btn.on( 'click', function(e) {
+    $rooms_list.on( 'click', 'li a', function( e ) {
+        var $el = $(this),
+            room = $el.data('room');
+
+        $rooms_list.find('.current').removeClass('current');
+        $el.addClass('current');
+
+        $rooms.find('.current').removeClass('current');
+        $('.room[data-room=' + room + ']').addClass('current');
+
         e.preventDefault();
-
-        nickname = $nickname_box.val();
-
-        socket.emit( 'user connected', nickname );
-
-        $nickname.addClass('off');
-        $chat.addClass('on');
     });
+
+    $rooms_list.find('li').first().find('a').trigger('click');
 
     $message_box.on( 'keydown', function(e) {
         if ( e.keyCode != 13 || !$message_box.val().trim() ) return;
 
         socket.emit( 'send message', {
-            'nickname': nickname,
-            'message': $message_box.val(),
-            'datetime': new Date()
+            'room': $('#room-list').find('.current').data('room'),
+            'message': $message_box.val()
         });
 
         $message_box.val('');
     });
 
-    socket.on('set users', function( users ) {
-        $users.html( users_tpl({ users: users }) );
+    // socket.on('set users', function( users ) {
+    //     $users.html( users_tpl({ users: users }) );
+    // });
+
+    // socket.on('new user', function( user ) {
+    //     $users.append( '<li data-id="' + user.id + '">' + user.name + '</li>' );
+    // });
+
+    // socket.on('remove user', function( id ) {
+    //     $users.find('li[data-id="' + id + '"]').remove();
+    // });
+
+    // socket.on('new message', function( data ) {
+    //     $chat_box.append( message_tpl( data ) );
+    //     $chat_box.scrollTop( $chat[0].scrollHeight );
+    // });
+
+    socket.on( 'set nick', function( nick ) {
+        var target = $('#room-list').find('.current').data('room');
+        nickname = nick;
+
+        var $open_room = $('.room[data-room=' + target +']').find('.chat');
+
+        $open_room.append( message_tpl({
+            nickname: 'SERVER',
+            message: 'Your nick is now ' + nick,
+            datetime: new Date()
+        }))
     });
 
-    socket.on('new user', function( user ) {
-        $users.append( '<li data-id="' + user.id + '">' + user.name + '</li>' );
-    });
+    socket.on( 'join room', function( room ) {
+        $rooms.append( room_tpl({ room: room }) )
+        $rooms_list.append( room_tab_tpl({ room: room }) );
 
-    socket.on('remove user', function( id ) {
-        $users.find('li[data-id="' + id + '"]').remove();
-    });
+        $rooms = $('#chat-rooms');
+        $rooms_list = $('#room-list').find('ul');
 
-    socket.on('new message', function( data ) {
-        $chat_box.append( message_tpl( data ) );
-        $chat_box.scrollTop( $chat[0].scrollHeight );
+        $rooms_list.find('li').last().find('a').trigger('click');
     });
 });

@@ -6,16 +6,24 @@
     <link rel="stylesheet" href="yak.css" />
 </head>
 <body>
-    <div id="choose-nickname">
-        <h3>Choose Nickname</h3>
-        <input type="text" id="nickname" />
-        <a href="#" id="join">JOIN</a>
-    </div><!-- #choose-nickname -->
-
     <div id="chat">
-        <div id="chat-box"></div><!-- #chat -->
-        <ul id="users"></ul><!-- #users -->
-        <input type="text" name="message" id="message">
+        <div id="chats">
+            <div id="room-list">
+                <ul>
+                    <li>
+                        <a data-room="#main" class="current">Server</a>
+                    </li>
+                </ul>
+            </div><!-- #room-list -->
+
+            <div id="chat-rooms">
+                <div class="room" data-room="#main">
+                    <div class="chat"></div><!-- .chat -->
+                </div><!-- #main.room -->
+            </div><!-- #chats-data -->
+        </div><!-- #chats -->
+
+        <input type="text" name="message" id="message" placeholder="type here.." autocomplete="off" />
     </div><!-- #chat -->
 
     <!-- TEMPLATES -->
@@ -29,8 +37,27 @@
 
     <script type="text/html" id="users-tpl">
         <% _.each(users, function( user ) { %>
-            <li data-id="<%= user.id %>"><%= user.name %></li>
+            <li data-id="<%= user.id %>">
+                <%= user.name %>
+            </li>
         <% }); %>
+    </script>
+
+    <script type="text/html" id="room-tpl">
+        <div class="room" data-room="#room-<%= room.replace( '#', '' ) %>">
+            <div class="chat"></div><!-- .chat -->
+            <div class="users">
+                <ul></ul>
+            </div><!-- #users -->
+        </div><!-- #main.room -->
+    </script>
+
+    <script type="text/html" id="room-tab-tpl">
+        <li>
+            <a data-room="#room-<%= room.replace( '#', '' ) %>">
+                <%= room %>
+            </a>
+        </li>
     </script>
     <!-- END TEMPLATES -->
 
