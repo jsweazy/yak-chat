@@ -38,9 +38,15 @@
     <script type="text/html" id="users-tpl">
         <% _.each(users, function( user ) { %>
             <li data-id="<%= user.id %>">
-                <%= user.name %>
+                <%= user.nick %>
             </li>
         <% }); %>
+    </script>
+
+    <script type="text/html" id="single-user-tpl">
+        <li data-id="<%= id %>">
+            <%= nick %>
+        </li>
     </script>
 
     <script type="text/html" id="room-tpl">

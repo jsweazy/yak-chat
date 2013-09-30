@@ -4,7 +4,8 @@ var _ = require('underscore'),
     server = require('http').createServer( app ),
     io = require( 'socket.io' ).listen( server ),
     port = process.env.PORT || 5000,
-    users = [];
+    main_room = '#main',
+    rooms = [];
 
 if ( process.argv[2] == 'is_heroku' ) {
     io.configure( function() {
@@ -22,17 +23,17 @@ app.get( '/', function( req, res ) {
 });
 
 io.sockets.on( 'connection', function( socket ) {
-    io.sockets.emit( 'set users', users );
-
     socket.on( 'send message', function( data ) {
         var message = data.message;
 
         if ( data.message.substring( 0, 1 ) == '/' ) {
             if ( message.substring( 1, 5 ) == 'nick' ) {
                 var nick = message.substring(6);
-                socket.set('nick', nick, function() {
+                socket.nick = nick;
+                console.log(socket);
+                // socket.set('nick', nick, function() {
                     socket.emit( 'set nick', nick );
-                });
+                // });
             }
             else if ( message.substring( 1, 5 ) == 'join' ) {
                 var room = message.substring(6);
@@ -44,46 +45,74 @@ io.sockets.on( 'connection', function( socket ) {
                 room = room.replace( / /g, '_' );
 
                 socket.join( room );
-                socket.emit( 'join room', room );
+                var users = [];
+
+                io.sockets.clients( room ).forEach( function ( user ) {
+                    users.push({
+                        id: user.id,
+                        nick: user.nick
+                    });
+                });
+
+                var room_data = {
+                    room: room,
+                    users: users
+                }
+                socket.emit( 'join room', room_data );
+
+                var user = {
+                    room: room,
+                    id: socket.id,
+                    nick: socket.nick
+                }
+                socket.broadcast.to( room ).emit( 'user joined room', user );
             }
         } else {
-            if ( data.room == '#main' ) return;
+            var room = data.room.replace( '#room-', '#' );
 
-            socket.get('nick', function( err, nick ) {
-                data.nick = nick;
-                io.sockets.emit( 'new message', data );
-            });
+            if ( room == main_room ) return;
+
+            // socket.get('nick', function( err, nick ) {
+                data.nick = socket.nick;
+                io.sockets.in( room ).emit( 'new message', data );
+            // });
         }
     });
 
-    // socket.on( 'set nick', function( nick ) {
-    //     console.log('setting nick');
-    //     socket.nick = nick;
-    //     io.sockets.emit( 'nick set', nick );
-    // });
+    socket.on( 'send server message', function( data ) {
+        var room = data.room;
 
-    socket.on( 'join room', function( data ) {
-        socket.join( data.room );
+        if (
+            room.substring( 0, 5 ) != '#main' &&
+            room.substring( 0, 6 ) != '#room-'
+        ) {
+            room = '#room-' + room.replace( '#', '' );
+        }
+
+        var message = {
+            room: room,
+            nick: 'SERVER',
+            message: data.message,
+            datetime: new Date()
+        }
+
+        io.sockets.in( data.room ).emit( 'new message', message );
     });
 
     socket.on( 'leave room', function( data ) {
         socket.leave( data.room );
     });
 
-    socket.on( 'user connected', function( data ) {
+    socket.on( 'user connected', function( nick ) {
         var user = {
             'id': socket.id,
-            'name': data
+            'name': nick
         }
-        users.push( user );
+
         io.sockets.emit( 'new user', user );
     });
 
     socket.on( 'disconnect', function( data ) {
-        users = _.reject( users, function( user ) {
-            return user.id == socket.id;
-        });
-
         io.sockets.emit( 'remove user', socket.id );
     });
 });
