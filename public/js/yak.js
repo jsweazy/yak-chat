@@ -20,7 +20,7 @@ jQuery( function() {
         $el.addClass('current');
 
         $rooms.find('.current').removeClass('current');
-        $('.room[data-room=' + room + ']').addClass('current');
+        $('.room[data-room="' + room + '"]').addClass('current');
 
         e.preventDefault();
     });
@@ -44,7 +44,7 @@ jQuery( function() {
     });
 
     socket.on('new message', function( data ) {
-        var $open_chat = $rooms.find('.room[data-room=' + data.room + ']').find('.chat'),
+        var $open_chat = $rooms.find('.room[data-room="' + data.room + '"]').find('.chat'),
             at_bottom = false;
 
         console.log($open_chat[0].scrollHeight - $open_chat.scrollTop(), $open_chat.outerHeight());
@@ -63,7 +63,7 @@ jQuery( function() {
 
         nick = _nick;
 
-        var $open_room = $('.room[data-room=' + target +']').find('.chat');
+        var $open_room = $('.room[data-room="' + target +'"]').find('.chat');
 
         $open_room.append( message_tpl({
             nick: 'SERVER',
@@ -91,7 +91,7 @@ jQuery( function() {
 
     socket.on( 'user joined room', function( user ) {
         console.log( 'user joined' );
-        var $user_list = $rooms.find('.room[data-room=#room-' + user.room.replace( '#', '' ) + ']').find('.users ul');
+        var $user_list = $rooms.find('.room[data-room="#room-' + user.room.replace( '#', '' ) + '"]').find('.users ul');
         console.log($user_list);
         $user_list.append( single_user_tpl( user ) );
     });

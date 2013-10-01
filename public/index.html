@@ -29,8 +29,8 @@
     <!-- TEMPLATES -->
     <script type="text/html" id="message-tpl">
         <div class="message">
-            <div class="nick"><%= nick %></div><!-- .user -->
-            <div class="msg"><%= message %></div><!-- .msg -->
+            <div class="nick"><%- nick %></div><!-- .user -->
+            <div class="msg"><%- message %></div><!-- .msg -->
             <div class="time"><%= datetime %></div><!-- .time -->
         </div><!-- .message -->
     </script>
@@ -38,14 +38,14 @@
     <script type="text/html" id="users-tpl">
         <% _.each(users, function( user ) { %>
             <li data-id="<%= user.id %>">
-                <%= user.nick %>
+                <%- user.nick %>
             </li>
         <% }); %>
     </script>
 
     <script type="text/html" id="single-user-tpl">
         <li data-id="<%= id %>">
-            <%= nick %>
+            <%- nick %>
         </li>
     </script>
 
@@ -61,7 +61,7 @@
     <script type="text/html" id="room-tab-tpl">
         <li>
             <a data-room="#room-<%= room.replace( '#', '' ) %>">
-                <%= room %>
+                <%- room %>
             </a>
         </li>
     </script>
